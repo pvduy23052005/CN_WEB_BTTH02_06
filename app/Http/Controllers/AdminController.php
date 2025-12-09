@@ -53,5 +53,30 @@ class AdminController extends Controller
     return redirect('/admin/category');
   }
 
+  // [get] /admin/category/edit/:id
+  public function edit($id){
+    $category = Category::findOrFail($id);
+    return view("admin.categories.edit" ,[
+      "title" => "Edit Category",
+      "category" => $category,
+    ]);
+  }
+
+  // [post] /admin/category/edit/:id
+  public function editPost(Request $request, $id)
+  {
+    $validated = $request->validate([
+      'name' => 'required|string|max:255',
+      'description' => 'nullable|string',
+    ]);
+
+    $category = Category::findOrFail($id);
+    $category->update([
+      'name' => $validated['name'],
+      'description' => $validated['description'] ?? null,
+    ]);
+
+    return redirect('/admin/category')->with('success', 'Category updated successfully.');
+  }
 
 }

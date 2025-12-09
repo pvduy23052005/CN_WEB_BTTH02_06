@@ -17,3 +17,9 @@ Route::get('/category/create' , [Controller::class, "create"]);
 
 // [post] /admin/category/create
 Route::post('/category/create' , [Controller::class, "createPost"]);
+
+// [get] /admin/category/edit/{id}
+Route::get("/category/edit/{id}" , [Controller::class  , "edit"]);
+
+// [post] /admin/category/edit/{id}
+Route::post("/category/edit/{id}" , [Controller::class  , "editPost"]);
