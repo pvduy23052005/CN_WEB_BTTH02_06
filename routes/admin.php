@@ -23,3 +23,6 @@ Route::get("/category/edit/{id}" , [Controller::class  , "edit"]);
 
 // [post] /admin/category/edit/{id}
 Route::post("/category/edit/{id}" , [Controller::class  , "editPost"]);
+
+// [get] /admin/users
+Route::get("/users" , [Controller::class  , "listUsers"]);

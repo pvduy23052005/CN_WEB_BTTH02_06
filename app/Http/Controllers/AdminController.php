@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\User;
 use App\Models\Course;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -79,4 +80,13 @@ class AdminController extends Controller
     return redirect('/admin/category')->with('success', 'Category updated successfully.');
   }
 
+  // [get] /admin/users
+  public function listUsers(){
+    $users = User::all();
+
+    return view("admin.users.manage" , [
+      "title" => "List users" , 
+      "users" => $users,
+    ]);
+  }
 }
