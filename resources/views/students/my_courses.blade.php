@@ -1,5 +1,4 @@
 @extends('layout.layoutDefault')
-
 @section('main-content')
-    <h1>my course</h1>
+    <h1> student dashboard</h1>
 @endsection
