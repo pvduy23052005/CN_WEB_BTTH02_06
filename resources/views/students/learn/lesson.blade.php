@@ -7,35 +7,59 @@
 
 @section('main-content')
     <div class="container-fluid my-5">
+        
+        {{-- Hiển thị thông báo flash message --}}
+        @if (session('success'))
+            <div class="alert alert-success"><i class="fas fa-check-circle"></i> {{ session('success') }}</div>
+        @endif
+        
         <div class="row">
             
             {{-- CỘT NỘI DUNG CHÍNH (VIDEO & TEXT) --}}
             <div class="col-lg-9">
-                <h1 class="mb-3">{{ $lesson->title }}</h1>
-                <p class="text-muted">Khóa học: {{ $course->title }}</p>
+                
+                {{-- Thanh điều hướng nhanh --}}
+                <p class="text-muted small">
+                    <a href="{{ route('student.progress', $course->id) }}">
+                        <i class="fas fa-chevron-left"></i> Quay lại Tiến độ Khóa học: {{ $course->title }}
+                    </a>
+                </p>
+
+                <h1 class="mb-3 text-primary">{{ $lesson->order }}. {{ $lesson->title }}</h1>
                 
                 <div class="lesson-content bg-white p-4 shadow-sm rounded">
+                    
+                    {{-- 1. HIỂN THỊ VIDEO --}}
                     @if ($lesson->video_url)
-                        {{-- 1. HIỂN THỊ VIDEO --}}
                         <div class="ratio ratio-16x9 mb-4">
-                            {{-- Sử dụng iframe để nhúng video từ YouTube hoặc các dịch vụ khác --}}
+                            {{-- Giả định video_url là iframe hoặc link có thể nhúng được --}}
                             <iframe src="{{ $lesson->video_url }}" allowfullscreen 
                                     frameborder="0" allow="autoplay; encrypted-media"></iframe>
                         </div>
                     @endif
                     
                     {{-- 2. NỘI DUNG TEXT/MÔ TẢ --}}
-                    <h3>Nội dung Bài học</h3>
+                    <h3 class="text-secondary mt-4">Nội dung Bài học</h3>
                     <div class="content-text mt-3">
-                        {{-- Dùng {!! !!} để hiển thị nội dung HTML nếu cần --}}
                         {!! $lesson->content !!} 
                     </div>
                 </div>
                 
                 {{-- 3. NÚT ĐÁNH DẤU HOÀN THÀNH --}}
                 <div class="d-flex justify-content-end mt-4">
-                    {{-- Lý tưởng: POST tới 1 route LessonProgressController để lưu tiến độ --}}
-                    <button class="btn btn-success btn-lg">✓ Đánh dấu Hoàn thành</button>
+                    @if ($isCompleted)
+                        <button class="btn btn-success btn-lg" disabled>
+                            <i class="fas fa-check-circle"></i> Bài học đã hoàn thành
+                        </button>
+                    @else
+                        {{-- **LOGIC CẬP NHẬT TIẾN ĐỘ:** Form POST gọi EnrollmentController::markLessonCompleted --}}
+                        <form method="POST" action="{{ route('student.lesson.complete', $lesson->id) }}">
+                            @csrf
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-bookmark"></i> Đánh dấu Hoàn thành Bài học
+                            </button>
+                        </form>
+                    @endif
                 </div>
             </div>
             
@@ -43,18 +67,17 @@
             <div class="col-lg-3">
                 <div class="card shadow-sm sticky-top" style="top: 20px;">
                     <div class="card-header bg-primary text-white">
-                        Tài liệu Kèm theo
+                        <i class="fas fa-paperclip me-1"></i> Tài liệu Kèm theo
                     </div>
                     <ul class="list-group list-group-flush">
                         @forelse ($materials as $material)
-                            <li class="list-group-item">
-                                {{-- Giả định hiển thị icon dựa trên file_type --}}
-                                <i class="fas fa-file-download"></i> {{ $material->filename }}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span><i class="fas fa-file-alt me-1"></i> {{ $material->filename }}</span>
                                 
                                 {{-- Liên kết tải xuống file --}}
-                                <a href="{{ asset('uploads/materials/' . $material->file_path) }}" 
-                                   target="_blank" class="float-end btn btn-sm btn-outline-secondary">
-                                    Tải xuống
+                                <a href="{{ asset('assets/uploads/materials/' . $material->file_path) }}" 
+                                   target="_blank" class="btn btn-sm btn-outline-secondary">
+                                    <i class="fas fa-download"></i>
                                 </a>
                             </li>
                         @empty
@@ -63,8 +86,7 @@
                     </ul>
                 </div>
                 
-                {{-- Bạn có thể thêm danh sách bài học khác của khóa học vào đây --}}
-                {{-- để học viên dễ dàng chuyển đổi --}}
+                {{-- Gợi ý: Khối hiển thị danh sách bài học khác để điều hướng --}}
             </div>
         </div>
     </div>
