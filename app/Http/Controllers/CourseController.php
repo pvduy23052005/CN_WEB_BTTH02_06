@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Response;
 use App\Models\Course;
 use App\Models\Category;
+use App\Models\Enrollment;
 use App\Models\User;
 use App\Models\Lesson;
 class CourseController extends Controller
@@ -84,11 +85,11 @@ class CourseController extends Controller
     {
         $student_id = Auth::id();
         $enrollments = Enrollment::with('course') 
-                                  ->where('user_id', $student_id)
-                                  ->orderBy('enrollment_date', 'desc')
-                                  ->get();
+                                  ->where('student_id', $student_id)
+                                  ->orderBy('enrolled_date', 'desc')
+                                  ->paginate(10);
 
-        return view('student.my_courses', compact('enrollments'));
+        return view('students.my_courses', compact('enrollments'));
     }
 
 

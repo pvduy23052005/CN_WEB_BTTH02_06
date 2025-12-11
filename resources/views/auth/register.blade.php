@@ -655,4 +655,3 @@
       setTimeout(() => {
         alert(`Đăng ký thành công với vai trò: ${selectedRole}`);
         // window.location.
->>>>>>> origin/main

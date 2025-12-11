@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Đăng Nhập</title>
+  <meta name="csrf-token" content="{{ csrf_token() }}">
   <style>
     :root {
       --color-text-primary: #1f2936;
@@ -361,7 +362,7 @@
         method = "POST"
         >
         @csrf
-        <!-- Email -->
+        {{-- email --}}
         <div class="form-group">
           <label class="form-label" for="email">Email</label>
           <div class="input-wrapper">
@@ -374,13 +375,10 @@
               name="email"
               class="form-input" 
               placeholder="admin@example.com"
-              value="{{ old('email') }}"
+              value=""
               required
             >
           </div>
-          @error('email')
-            <div style="color: red; font-size: 14px; margin-top: 5px;">{{ $message }}</div>
-          @enderror
         </div>
 
         <!-- Password -->
@@ -406,6 +404,7 @@
             </button>
           </div>
         </div>
+
         <!-- Login Button -->
         <button type="submit" class="btn-login">Đăng nhập</button>
       </form>
