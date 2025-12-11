@@ -401,6 +401,7 @@
 
       <!-- Register Form -->
       <form id="registerForm">
+        @csrf
         <!-- Full Name & Email -->
         <div class="form-row">
           <div class="form-group">
@@ -650,8 +651,6 @@
         password,
         role: selectedRole
       });
+    });
 
-      // Redirect after 2 seconds
-      setTimeout(() => {
-        alert(`Đăng ký thành công với vai trò: ${selectedRole}`);
-        // window.location.
+    </script>

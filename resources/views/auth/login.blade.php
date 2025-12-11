@@ -5,7 +5,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Đăng Nhập</title>
-  <meta name="csrf-token" content="{{ csrf_token() }}">
   <style>
     :root {
       --color-text-primary: #1f2936;
@@ -439,6 +438,5 @@
     });
 
   </script>
->>>>>>> origin/main
 </body>
 </html>
