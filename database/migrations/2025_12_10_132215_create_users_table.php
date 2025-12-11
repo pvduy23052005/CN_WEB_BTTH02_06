@@ -21,6 +21,7 @@ return new class extends Migration
         
         // 0: học viên, 1: giảng viên, 2: quản trị viên. Mặc định là 0.
         $table->integer('role')->default(0); 
+        $table->boolean('deleted')->default(0); // Quản lý xóa mềm (soft delete)
         
         $table->timestamps(); // Tạo 2 cột: created_at và updated_at
     });
