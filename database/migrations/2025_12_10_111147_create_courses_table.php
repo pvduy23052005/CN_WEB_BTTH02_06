@@ -23,6 +23,7 @@ return new class extends Migration
         $table->string('image')->nullable();
         $table->timestamp('created_at')->nullable();
         $table->timestamp('updated_at')->nullable();
+        $table->integer('is_deleted')->default(0);
        
         $table->foreign('instructor_id')->references('id')->on('users');
         $table->foreign('category_id')->references('id')->on('categories');

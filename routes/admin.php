@@ -1,28 +1,30 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AdminController as Controller;
+use App\Http\Controllers\AdminController;
 
-// [get] /admin/dashboard
-Route::get(
-  '/dashboard',
-  [Controller::class, "index"]
-);
+// Tất cả route trong file này tự động có prefix: /admin
+// Và name prefix: admin.
 
-// [get] /admin/category
-Route::get('/category' , [Controller::class, "category"]);
+Route::middleware(['auth', 'role:2'])->group(function () {
 
-// [get] /admin/category/create
-Route::get('/category/create' , [Controller::class, "create"]);
+  // /admin/dashboard -> route name: admin.dashboard
+  Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
 
-// [post] /admin/category/create
-Route::post('/category/create' , [Controller::class, "createPost"]);
+  // Category routes
+  Route::prefix('category')->name('category.')->group(function () {
+    // /admin/category -> admin.category.index
+    Route::get('/', [AdminController::class, 'category'])->name('index');
 
-// [get] /admin/category/edit/{id}
-Route::get("/category/edit/{id}" , [Controller::class  , "edit"]);
+    // /admin/category/create -> admin.category.create
+    Route::get('/create', [AdminController::class, 'create'])->name('create');
+    Route::post('/create', [AdminController::class, 'createPost'])->name('store');
 
-// [post] /admin/category/edit/{id}
-Route::post("/category/edit/{id}" , [Controller::class  , "editPost"]);
+    // /admin/category/edit/{id} -> admin.category.edit
+    Route::get('/edit/{id}', [AdminController::class, 'edit'])->name('edit');
+    Route::post('/edit/{id}', [AdminController::class, 'editPost'])->name('update');
+  });
 
-// [get] /admin/users
-Route::get("/users" , [Controller::class  , "listUsers"]);
+  // /admin/users -> admin.users
+  Route::get('/users', [AdminController::class, 'listUsers'])->name('users');
+});

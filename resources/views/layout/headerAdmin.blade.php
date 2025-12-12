@@ -1,7 +1,12 @@
+
 <header class="header">
-  <h1>Header</h1>
+  <h1>
+    Quản trị hệ thống
+  </h1>
   <div class="user-info">
-    <span>Admin</span>
+    @auth
+      <span class="user-name">{{ Auth::user()->username }}</span>
+    @endauth
     <div class="user-avatar">A</div>
   </div>
 </header>

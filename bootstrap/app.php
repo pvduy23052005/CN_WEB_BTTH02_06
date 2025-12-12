@@ -12,24 +12,24 @@ return Application::configure(basePath: dirname(__DIR__))
     health: '/up',
     then: function (): void {
       // /admin
-      Route::middleware('web') // Áp dụng middleware web (session, csrf...)
-        ->prefix('admin')    // Tiền tố đường dẫn: /admin
-        ->name('admin.')     // Tiền tố tên route: admin.
+      Route::middleware('web')
+        ->prefix('admin')
+        ->name('admin.')
         ->group(base_path('routes/admin.php'));
 
-      // student
+      // /student
       Route::middleware('web')
         ->prefix('student')
         ->name('student.')
         ->group(base_path('routes/student.php'));
 
-      // instructor
+      // /instructor
       Route::middleware('web')
         ->prefix('instructor')
         ->name('instructor.')
         ->group(base_path('routes/instructor.php'));
-      
-      // auth
+
+      // /auth
       Route::middleware('web')
         ->prefix('auth')
         ->name('auth.')
@@ -37,8 +37,13 @@ return Application::configure(basePath: dirname(__DIR__))
     }
   )
   ->withMiddleware(function (Middleware $middleware): void {
-    //
+    // Đăng ký middleware alias
+    $middleware->alias([
+      'role' => \App\Http\Middleware\RoleMiddleware::class,
+    ]);
+    $middleware->redirectGuestsTo('/auth/login');
   })
   ->withExceptions(function (Exceptions $exceptions): void {
     //
-  })->create();
+  })
+  ->create();

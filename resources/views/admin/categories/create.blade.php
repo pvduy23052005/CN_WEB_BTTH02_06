@@ -5,15 +5,17 @@
     <style>
       .form-card {
         margin: 24px;
-        padding: 20px;
+        padding: 50px;
         background: #fff;
         border-radius: 10px;
         box-shadow: 0 6px 18px rgba(0,0,0,0.07);
-        max-width: 560px;
+        width: 100%;
+        margin-left: auto ; 
+        margin-right: auto ;
       }
       .form-card h2 {
         margin: 0 0 16px;
-        font-size: 20px;
+        font-size: 30px;
         font-weight: 700;
       }
       .form-group {
@@ -62,7 +64,7 @@
     </style>
 
     <div class="form-card">
-      <h2>Create Category</h2>
+      <h2>Tạo danh mục</h2>
 
       @if ($errors->any())
         <div class="alert">
@@ -78,16 +80,16 @@
       <form method="POST" action="/admin/category/create">
         @csrf
         <div class="form-group">
-          <label class="form-label" for="name">Name <span style="color:#ef4444">*</span></label>
+          <label class="form-label" for="name">Tên danh mục <span style="color:#ef4444">*</span></label>
           <input class="form-control" type="text" id="name" name="name" value="{{ old('name') }}" required>
         </div>
 
         <div class="form-group">
-          <label class="form-label" for="description">Description</label>
+          <label class="form-label" for="description">Mô tả danh mục</label>
           <textarea class="form-control" id="description" name="description" rows="3">{{ old('description') }}</textarea>
         </div>
 
-        <button class="btn-primary" type="submit">Create</button>
+        <button class="btn-primary" type="submit">Tạo mới</button>
       </form>
     </div>
   </div>
