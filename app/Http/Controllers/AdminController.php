@@ -12,14 +12,30 @@ use Illuminate\Http\Response;
 class AdminController extends Controller
 {
   // [get] /admin/dashboard . 
-  public function index(Request $request, Response $response)
+  public function index()
   {
+    // 1. Thống kê số lượng
+    $totalStudents = User::where('role', 0)->count();      // Số học viên
+    $totalInstructors = User::where('role', 1)->count();   // Số giảng viên
+    $totalCourses = Course::count();                       // Tổng khóa học
+    $pendingCoursesCount = Course::where('is_active', 0)->count(); // Khóa chờ duyệt
+
+    // 2. Lấy danh sách 5 khóa học mới nhất đang chờ duyệt (để Admin xử lý nhanh)
+    $pendingCourses = Course::where('is_active', 0)
+      ->with('instructor') // Load thông tin giảng viên
+      ->orderBy('id', 'desc')
+      ->take(5)
+      ->get();
 
     return view('admin.dashboard', [
-      "title" => "Dashboard admin"
+      'title' => 'Tổng quan hệ thống',
+      'totalStudents' => $totalStudents,
+      'totalInstructors' => $totalInstructors,
+      'totalCourses' => $totalCourses,
+      'pendingCoursesCount' => $pendingCoursesCount,
+      'pendingCourses' => $pendingCourses
     ]);
   }
-
   // [get] /admin/category .
   public function category()
   {
@@ -99,7 +115,9 @@ class AdminController extends Controller
   // [get] /admin/courses
   public function listCourses()
   {
-    $courses = Course::all();
+    $courses = Course::where("is_deleted" , 0 )
+      ->orderBy("id" , "desc")
+      ->get();
     return view("admin.courses.index", [
       "title" => "List courses",
       "courses" => $courses,
