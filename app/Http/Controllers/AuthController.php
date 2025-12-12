@@ -98,6 +98,7 @@ class AuthController extends Controller
     return redirect('/auth/login')->with('success', 'Đăng ký thành công!');
   }
 
+
   public function logout(Request $request)
 {
     // Đăng xuất người dùng hiện tại

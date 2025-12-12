@@ -2,6 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\Controller;
+
+use App\Http\Controllers\AuthController;
 
 // Tất cả route trong file này tự động có prefix: /admin
 // Và name prefix: admin.
@@ -29,6 +32,9 @@ Route::middleware(['auth', 'role:2'])->group(function () {
 
   Route::post("/course/approve/{id}", [AdminController::class, "approveCourse"])->name("course.approve");
 
+  // /admin/report  
+  Route::get("/report", [AdminController::class, "report"]);
+  
   // /admin/users -> admin.users
   Route::get('/users', [AdminController::class, 'listUsers'])->name('users');
 });

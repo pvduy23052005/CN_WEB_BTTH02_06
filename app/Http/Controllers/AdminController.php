@@ -4,22 +4,39 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Course;
+use App\Models\Enrollment;
 use App\Models\User;
-
+use Illuminate\Container\Attributes\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 class AdminController extends Controller
 {
   // [get] /admin/dashboard . 
-  public function index(Request $request, Response $response)
+  public function index()
   {
+    // 1. Thống kê số lượng
+    $totalStudents = User::where('role', 0)->count();      // Số học viên
+    $totalInstructors = User::where('role', 1)->count();   // Số giảng viên
+    $totalCourses = Course::count();                       // Tổng khóa học
+    $pendingCoursesCount = Course::where('is_active', 0)->count(); // Khóa chờ duyệt
+
+    // 2. Lấy danh sách 5 khóa học mới nhất đang chờ duyệt (để Admin xử lý nhanh)
+    $pendingCourses = Course::where('is_active', 0)
+      ->with('instructor') // Load thông tin giảng viên
+      ->orderBy('id', 'desc')
+      ->take(5)
+      ->get();
 
     return view('admin.dashboard', [
-      "title" => "Dashboard admin"
+      'title' => 'Tổng quan hệ thống',
+      'totalStudents' => $totalStudents,
+      'totalInstructors' => $totalInstructors,
+      'totalCourses' => $totalCourses,
+      'pendingCoursesCount' => $pendingCoursesCount,
+      'pendingCourses' => $pendingCourses
     ]);
   }
-
   // [get] /admin/category .
   public function category()
   {
@@ -99,13 +116,16 @@ class AdminController extends Controller
   // [get] /admin/courses
   public function listCourses()
   {
-    $courses = Course::all();
+    $courses = Course::where("is_deleted", 0)
+      ->orderBy("id", "desc")
+      ->get();
     return view("admin.courses.index", [
       "title" => "List courses",
       "courses" => $courses,
     ]);
   }
 
+  // [post] /admin/course/approve/{id}.
   public function approveCourse($id)
   {
     $course = Course::findOrFail($id);
@@ -113,5 +133,54 @@ class AdminController extends Controller
     $course->save();
 
     return redirect()->route('admin.courses')->with('success', 'Course approved successfully.');
+  }
+
+  // [get] /admin/report
+  public function report()
+  {
+
+    $totalRevenue = Enrollment::join('courses', 'enrollments.course_id', '=', 'courses.id')
+      ->sum('courses.price');
+
+    $totalStudents = User::where('role', 0)->count();
+    $newEnrollmentsThisMonth = Enrollment::whereMonth('enrolled_date', date('m'))
+      ->whereYear('enrolled_date', date('Y'))
+      ->count();
+
+    // 2. Top 5 Khóa học bán chạy nhất (Dựa trên số lượng enrollment)
+    // Yêu cầu Model Course phải có: public function enrollments() { return $this->hasMany(Enrollment::class); }
+    $topCourses = Course::withCount('enrollments')
+      ->orderBy('enrollments_count', 'desc')
+      ->take(5)
+      ->get();
+
+    // 3. Thống kê theo Danh mục (Có bao nhiêu khóa học trong mỗi danh mục)
+    // Yêu cầu Model Category có: public function courses() { return $this->hasMany(Course::class); }
+    $categoriesStats = Category::withCount('courses')->get();
+
+    return view("admin.report.statistics", [
+      "title" => "Báo cáo thống kê",
+      "totalRevenue" => $totalRevenue,
+      "totalStudents" => $totalStudents,
+      "newEnrollments" => $newEnrollmentsThisMonth,
+      "topCourses" => $topCourses,
+      "categoriesStats" => $categoriesStats
+    ]);
+  }
+
+  // [post] /admin/logout
+  public function logoutAdmin(Request $request)
+  {
+      // 1. Đăng xuất user hiện tại
+      Auth::logout();
+
+      // 2. Hủy session hiện tại (để không ai dùng lại được)
+      $request->session()->invalidate();
+
+      // 3. Tạo lại CSRF token mới (để bảo mật cho phiên tiếp theo)
+      $request->session()->regenerateToken();
+
+      // 4. Chuyển hướng về trang đăng nhập
+      return redirect('/auth/login')->with('success', 'Đăng xuất thành công!');
   }
 }
