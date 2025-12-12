@@ -101,15 +101,17 @@ class CourseController extends Controller
  
   //Phần của giảng viên
 
-  // [GET] /instructor/courses
+    // [GET] /instructor/courses
     public function index()
     {
-        // Chỉ lấy những khóa học chưa bị xóa (is_deleted = 0)
-        // Sắp xếp ID giảm dần để khóa học mới nhất lên đầu
-        $courses = Course::where("is_deleted", 0)->orderBy('id', 'desc')->get();
+        // CHỈNH SỬA: Chỉ lấy các khóa học của giảng viên có ID = 2
+        $courses = Course::where('instructor_id', 2)
+            ->where("is_deleted", 0)
+            ->orderBy('id', 'desc')
+            ->get();
         
         return view('instructor.course.index', [
-            "title" => "Quản lý khóa học",
+            "title" => "Quản lý khóa học (GV ID: 2)",
             "courses" => $courses
         ]);
     }
@@ -118,8 +120,6 @@ class CourseController extends Controller
     public function create()
     {
         $categories = Category::all();
-        // Không cần lấy instructors nữa vì sẽ tự động gán
-        
         return view('instructor.course.create', [
             'title' => 'Thêm khóa học',
             'categories' => $categories
@@ -129,7 +129,6 @@ class CourseController extends Controller
     // [POST] /instructor/courses/store
     public function store(Request $request)
     {
-        // 1. Validate
         $request->validate([
             'title' => 'required|max:255',
             'category_id' => 'required',
@@ -139,23 +138,17 @@ class CourseController extends Controller
 
         $data = $request->except('image');
 
-        // 2. Tự động lấy giảng viên (Demo hoặc Auth)
-        $demoInstructor = User::where('role', 1)->first();
-        if ($demoInstructor) {
-            $data['instructor_id'] = $demoInstructor->id;
-        } else {
-            // Fallback: Gán cứng = 1 để test nếu DB rỗng
-            $data['instructor_id'] = 1; 
-        }
+        // --- FIX CỨNG USER ID = 2 ---
+        $data['instructor_id'] = 2; 
         
         $data['is_deleted'] = 0;
 
-        // 3. Xử lý ảnh
+        // Xử lý ảnh
         if ($request->hasFile('image')) {
             $file = $request->file('image');
             $filename = time() . '_' . $file->getClientOriginalName();
             $file->move(public_path('uploads/courses'), $filename);
-            $data['image'] = 'uploads/courses/' . $filename; // Lưu đường dẫn đầy đủ cho tiện
+            $data['image'] = 'uploads/courses/' . $filename;
         }
 
         Course::create($data);
@@ -166,17 +159,16 @@ class CourseController extends Controller
     // [GET] /instructor/courses/{id}/edit
     public function edit($id)
     {
-        // Tìm khóa học theo ID
+        // Tìm khóa học
         $course = Course::find($id);
 
-        // Kiểm tra nếu không tìm thấy hoặc khóa học đã bị xóa mềm
-        if (!$course || $course->is_deleted == 1) {
-            return redirect()->route('instructor.courses.index')->with('msg', 'Khóa học không tồn tại!');
+        // CHỈNH SỬA: Kiểm tra thêm điều kiện instructor_id phải bằng 2
+        if (!$course || $course->is_deleted == 1 || $course->instructor_id != 2) {
+            return redirect()->route('instructor.courses.index')->with('msg', 'Bạn không có quyền sửa khóa học này!');
         }
 
         $categories = Category::all();
 
-        // Trả về view edit (Lưu ý đường dẫn view: instructor.course.edit)
         return view('instructor.course.edit', [
             'title' => 'Cập nhật khóa học',
             'course' => $course,
@@ -189,11 +181,11 @@ class CourseController extends Controller
     {
         $course = Course::find($id);
 
-        if (!$course) {
-            return redirect()->route('instructor.courses.index')->with('msg', 'Lỗi: Khóa học không tồn tại.');
+        // CHỈNH SỬA: Kiểm tra quyền sở hữu (ID = 2)
+        if (!$course || $course->instructor_id != 2) {
+            return redirect()->route('instructor.courses.index')->with('msg', 'Lỗi: Khóa học không tồn tại hoặc không đủ quyền.');
         }
 
-        // 1. Validate (Ảnh không bắt buộc khi sửa)
         $request->validate([
             'title' => 'required|max:255',
             'category_id' => 'required',
@@ -201,26 +193,17 @@ class CourseController extends Controller
             'image' => 'nullable|image|max:2048',
         ]);
 
-        // Lấy dữ liệu ngoại trừ ảnh (vì ảnh xử lý riêng)
         $data = $request->except('image');
 
-        // 2. Xử lý ảnh mới (Nếu người dùng có upload ảnh khác)
+        // Xử lý ảnh mới
         if ($request->hasFile('image')) {
-            // (Tùy chọn) Xóa ảnh cũ khỏi server nếu cần
-            // if ($course->image && file_exists(public_path($course->image))) {
-            //     unlink(public_path($course->image));
-            // }
-
+            // (Tùy chọn) Xóa ảnh cũ...
             $file = $request->file('image');
             $filename = time() . '_' . $file->getClientOriginalName();
             $file->move(public_path('uploads/courses'), $filename);
-            
-            // Cập nhật đường dẫn ảnh mới vào mảng data
             $data['image'] = 'uploads/courses/' . $filename;
         }
-        // Lưu ý: Nếu không up ảnh mới, $data sẽ không có key 'image', Laravel sẽ giữ nguyên ảnh cũ trong DB.
 
-        // 3. Thực hiện Update
         $course->update($data);
 
         return redirect()->route('instructor.courses.index')->with('msg', 'Cập nhật khóa học thành công!');
@@ -231,14 +214,14 @@ class CourseController extends Controller
     {
         $course = Course::find($id);
 
-        if ($course) {
-            // XÓA MỀM: Chuyển is_deleted thành 1
+        // CHỈNH SỬA: Kiểm tra quyền sở hữu (ID = 2)
+        if ($course && $course->instructor_id == 2) {
+            // XÓA MỀM
             $course->update(['is_deleted' => 1]);
-            
             return redirect()->route('instructor.courses.index')->with('msg', 'Đã xóa khóa học thành công!');
         }
 
-        return redirect()->route('instructor.courses.index')->with('msg', 'Lỗi: Không tìm thấy khóa học.');
+        return redirect()->route('instructor.courses.index')->with('msg', 'Lỗi: Không tìm thấy khóa học hoặc không đủ quyền.');
     }
   
 }

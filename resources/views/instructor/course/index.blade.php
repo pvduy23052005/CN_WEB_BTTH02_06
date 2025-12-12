@@ -26,8 +26,8 @@
                         <th width="15%">Hình ảnh</th>
                         <th width="30%">Tên khóa học</th>
                         <th width="20%">Danh mục</th>
-                        <th width="15%">Giá bán</th>
-                        <th width="15%" class="text-center">Hành động</th>
+                        <th width="10%">Giá bán</th>
+                        <th width="20%" class="text-center">Hành động</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -58,10 +58,18 @@
                                 <span class="price-text">{{ number_format($course->price) }} đ</span>
                             </td>
                             <td class="text-center">
-                                <div class="action-group">
+                                <div class="action-group" style="display: flex; justify-content: center; gap: 5px;">
+                                    
+                                    <a href="{{ route('instructor.lessons.index', $course->id) }}" class="action-btn" title="Quản lý bài học" style="color: #17a2b8; border: 1px solid #17a2b8; padding: 5px 10px; border-radius: 4px;">
+                                        <i class="fas fa-list"></i>
+                                    </a>
+
+                                    {{-- Nút Sửa --}}
                                     <a href="{{ route('instructor.courses.edit', $course->id) }}" class="action-btn btn-edit" title="Sửa">
                                         <i class="fas fa-pen"></i>
                                     </a>
+                                    
+                                    {{-- Nút Xóa --}}
                                     <form action="{{ route('instructor.courses.destroy', $course->id) }}" method="POST" style="margin:0;">
                                         @csrf
                                         @method('DELETE')

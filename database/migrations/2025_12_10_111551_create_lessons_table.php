@@ -19,7 +19,7 @@ return new class extends Migration
         $table->string('video_url')->nullable();
         $table->integer('order');
         $table->timestamp('created_at')->nullable();
-
+        $table->tinyInteger('is_deleted')->default(0);
         $table->foreign('course_id')->references('id')->on('courses');
     });
 }
