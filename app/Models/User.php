@@ -31,12 +31,12 @@ class User extends Authenticatable
     'role' => 'integer',
   ];
 
-  protected static function booted()
-  {
-    static::addGlobalScope('active', function ($builder) {
-      $builder->where('deleted', false);
-    });
-  }
+  // protected static function booted()
+  // {
+  //   static::addGlobalScope('active', function ($builder) {
+  //     $builder->where('deleted', false);
+  //   });
+  // }
 
   public static function withDeleted()
   {

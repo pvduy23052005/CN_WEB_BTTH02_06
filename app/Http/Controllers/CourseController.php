@@ -11,6 +11,7 @@ use App\Models\Category;
 use App\Models\Enrollment;
 use App\Models\User;
 use App\Models\Lesson;
+
 class CourseController extends Controller
 {
     //Phần sinh viên
@@ -94,84 +95,150 @@ class CourseController extends Controller
 
 
 
-  // [get] /instructor/course 
-  public function index(Request $request, Response $response)
-  {
-     $courses = Course::where("is_deleted" , 0)->get();
-     $categories = Category::all();
-    return view('courses.index', [
-      "title" => "Dashboard course",
-      "courses"=>$courses
-    ]);
-  }
+
 
   
  
   //Phần của giảng viên
-  // 2. Giao diện thêm mới
-    public function create()
+
+  // [GET] /instructor/courses
+    public function index()
     {
-        // Cần lấy danh mục và giảng viên để chọn trong <select>
-        $categories = Category::all();
-        $instructors = User::where('role', 1)->get(); // Giả sử role 1 là giảng viên
-
-        return view('courses.create', [
-            'title' => 'Thêm khóa học',
-            'categories' => $categories,
-            'instructors' => $instructors
-
+        // Chỉ lấy những khóa học chưa bị xóa (is_deleted = 0)
+        // Sắp xếp ID giảm dần để khóa học mới nhất lên đầu
+        $courses = Course::where("is_deleted", 0)->orderBy('id', 'desc')->get();
+        
+        return view('instructor.course.index', [
+            "title" => "Quản lý khóa học",
+            "courses" => $courses
         ]);
     }
 
-    // 3. Xử lý lưu mới
+    // [GET] /instructor/courses/create
+    public function create()
+    {
+        $categories = Category::all();
+        // Không cần lấy instructors nữa vì sẽ tự động gán
+        
+        return view('instructor.course.create', [
+            'title' => 'Thêm khóa học',
+            'categories' => $categories
+        ]);
+    }
+
+    // [POST] /instructor/courses/store
     public function store(Request $request)
     {
-        // Validate dữ liệu (bạn có thể thêm rules tùy ý)
-        $data = $request->all();
-        $data['is_deleted'] = 0; // Mặc định chưa xóa
+        // 1. Validate
+        $request->validate([
+            'title' => 'required|max:255',
+            'category_id' => 'required',
+            'price' => 'nullable|numeric',
+            'image' => 'nullable|image|max:2048',
+        ]);
+
+        $data = $request->except('image');
+
+        // 2. Tự động lấy giảng viên (Demo hoặc Auth)
+        $demoInstructor = User::where('role', 1)->first();
+        if ($demoInstructor) {
+            $data['instructor_id'] = $demoInstructor->id;
+        } else {
+            // Fallback: Gán cứng = 1 để test nếu DB rỗng
+            $data['instructor_id'] = 1; 
+        }
+        
+        $data['is_deleted'] = 0;
+
+        // 3. Xử lý ảnh
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/courses'), $filename);
+            $data['image'] = 'uploads/courses/' . $filename; // Lưu đường dẫn đầy đủ cho tiện
+        }
 
         Course::create($data);
 
-        return redirect()->route('courses.index')->with('msg', 'Thêm thành công!');
+        return redirect()->route('instructor.courses.index')->with('msg', 'Thêm khóa học thành công!');
     }
 
-   public function edit($id)
-{
-    $course = Course::find($id);
-    
+    // [GET] /instructor/courses/{id}/edit
+    public function edit($id)
+    {
+        // Tìm khóa học theo ID
+        $course = Course::find($id);
 
-    // Nếu không tìm thấy khóa học thì báo lỗi 404
-    if (!$course) {
-        return redirect()->route('courses.index')->with('msg', 'Không tìm thấy khóa học!');
+        // Kiểm tra nếu không tìm thấy hoặc khóa học đã bị xóa mềm
+        if (!$course || $course->is_deleted == 1) {
+            return redirect()->route('instructor.courses.index')->with('msg', 'Khóa học không tồn tại!');
+        }
+
+        $categories = Category::all();
+
+        // Trả về view edit (Lưu ý đường dẫn view: instructor.course.edit)
+        return view('instructor.course.edit', [
+            'title' => 'Cập nhật khóa học',
+            'course' => $course,
+            'categories' => $categories
+        ]);
     }
 
-    $categories = Category::all();
-    // Lấy list giảng viên (role = 1)
-    $instructors = User::where('role', 1)->get(); 
-
-    return view('courses.edit', [
-        'title' => 'Sửa khóa học',
-        'course' => $course,
-        'categories' => $categories,
-        'instructors' => $instructors
-    ]);
-}
-    // 5. Xử lý cập nhật
+    // [PUT] /instructor/courses/{id}
     public function update(Request $request, $id)
     {
         $course = Course::find($id);
-        $course->update($request->all());
 
-        return redirect()->route('courses.index')->with('msg', 'Cập nhật thành công!');
+        if (!$course) {
+            return redirect()->route('instructor.courses.index')->with('msg', 'Lỗi: Khóa học không tồn tại.');
+        }
+
+        // 1. Validate (Ảnh không bắt buộc khi sửa)
+        $request->validate([
+            'title' => 'required|max:255',
+            'category_id' => 'required',
+            'price' => 'nullable|numeric',
+            'image' => 'nullable|image|max:2048',
+        ]);
+
+        // Lấy dữ liệu ngoại trừ ảnh (vì ảnh xử lý riêng)
+        $data = $request->except('image');
+
+        // 2. Xử lý ảnh mới (Nếu người dùng có upload ảnh khác)
+        if ($request->hasFile('image')) {
+            // (Tùy chọn) Xóa ảnh cũ khỏi server nếu cần
+            // if ($course->image && file_exists(public_path($course->image))) {
+            //     unlink(public_path($course->image));
+            // }
+
+            $file = $request->file('image');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/courses'), $filename);
+            
+            // Cập nhật đường dẫn ảnh mới vào mảng data
+            $data['image'] = 'uploads/courses/' . $filename;
+        }
+        // Lưu ý: Nếu không up ảnh mới, $data sẽ không có key 'image', Laravel sẽ giữ nguyên ảnh cũ trong DB.
+
+        // 3. Thực hiện Update
+        $course->update($data);
+
+        return redirect()->route('instructor.courses.index')->with('msg', 'Cập nhật khóa học thành công!');
     }
 
+    // [DELETE] /instructor/courses/{id}
     public function destroy($id)
     {
         $course = Course::find($id);
-        $course->is_deleted = 1; // Đánh dấu là đã xóa
-        $course->save();
 
-        return redirect()->route('courses.index')->with('msg', 'Xóa thành công!');
+        if ($course) {
+            // XÓA MỀM: Chuyển is_deleted thành 1
+            $course->update(['is_deleted' => 1]);
+            
+            return redirect()->route('instructor.courses.index')->with('msg', 'Đã xóa khóa học thành công!');
+        }
+
+        return redirect()->route('instructor.courses.index')->with('msg', 'Lỗi: Không tìm thấy khóa học.');
     }
   
 }

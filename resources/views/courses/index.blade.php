@@ -6,7 +6,6 @@
 @section('main-content')
     <div class="container my-5">
         <h1 class="mb-4 text-center text-primary">Khám phá Khóa học Online</h1>
-
         {{-- Form Tìm kiếm và Lọc --}}
         <div class="row mb-5 justify-content-center">
             <div class="col-lg-10">

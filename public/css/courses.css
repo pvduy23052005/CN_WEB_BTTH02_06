@@ -1,0 +1,323 @@
+/* =========================================
+   1. GLOBAL LAYOUT & WRAPPER
+   ========================================= */
+.admin-content-wrapper {
+    margin-left: 260px; /* Chiều rộng Sidebar */
+    width: calc(100% - 260px); /* Đảm bảo khớp với margin-left */
+    padding: 30px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fc;
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+
+/* =========================================
+   2. CARDS & CONTAINERS (Khung chứa)
+   ========================================= */
+
+/* Card hiển thị danh sách (Index Page) */
+.custom-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    border: none;
+    overflow: hidden;
+    margin-bottom: 30px;
+}
+
+.card-header-custom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 30px;
+    background: #fff;
+    border-bottom: 1px solid #edf2f9;
+}
+
+/* Card Form nhập liệu (Create/Edit Page) */
+.course-form-card {
+    background: #fff;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+    border: none;
+    max-width: 900px;
+    margin: 0 auto; /* Căn giữa form */
+}
+
+/* =========================================
+   3. TYPOGRAPHY & TITLES (Tiêu đề)
+   ========================================= */
+
+/* Tiêu đề trang danh sách */
+.page-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin: 0;
+    position: relative;
+}
+
+.page-title::after {
+    content: ''; 
+    display: block; 
+    width: 40px; 
+    height: 3px;
+    background: linear-gradient(90deg, #4e73df, #224abe);
+    margin-top: 5px; 
+    border-radius: 2px;
+}
+
+/* Tiêu đề trong Form */
+.course-form-card h1 {
+    text-align: center;
+    margin-bottom: 35px;
+    text-transform: uppercase;
+    color: #2c3e50;
+    border-bottom: 2px solid #f1f1f1;
+    padding-bottom: 15px;
+    font-size: 24px;
+    font-weight: 700;
+    position: relative;
+}
+
+.course-form-card h1::after {
+    content: ''; 
+    display: block; 
+    width: 60px; 
+    height: 4px;
+    background: linear-gradient(90deg, #4e73df, #224abe);
+    margin: 10px auto 0; 
+    border-radius: 2px;
+}
+
+/* =========================================
+   4. BUTTONS & ACTIONS (Nút bấm)
+   ========================================= */
+
+/* Nút Thêm mới (Gradient tím) */
+.btn-add-new {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 50px;
+    font-weight: 600;
+    box-shadow: 0 4px 10px rgba(118, 75, 162, 0.3);
+    text-decoration: none;
+    display: flex; 
+    align-items: center; 
+    gap: 8px;
+    transition: transform 0.2s;
+    font-size: 14px;
+}
+
+.btn-add-new:hover {
+    transform: translateY(-2px);
+    color: white;
+    box-shadow: 0 6px 15px rgba(118, 75, 162, 0.5);
+}
+
+/* Các nút hành động nhỏ (Sửa/Xóa trong bảng) */
+.action-group {
+    display: flex; 
+    justify-content: center; 
+    gap: 8px;
+}
+
+.action-btn {
+    width: 32px; 
+    height: 32px;
+    border-radius: 50%;
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+    border: none; 
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+    color: white !important;
+    font-size: 13px;
+}
+
+.btn-edit {
+    background: #ffc107; /* Vàng */
+    box-shadow: 0 3px 6px rgba(255, 193, 7, 0.3);
+}
+.btn-edit:hover { background: #e0a800; transform: translateY(-2px); }
+
+.btn-delete {
+    background: #dc3545; /* Đỏ */
+    box-shadow: 0 3px 6px rgba(220, 53, 69, 0.3);
+}
+.btn-delete:hover { background: #c82333; transform: translateY(-2px); }
+
+/* Nút Form (Lưu/Hủy) */
+.form-actions { 
+    display: flex; 
+    justify-content: flex-end; 
+    gap: 15px; 
+    margin-top: 30px; 
+    border-top: 1px solid #eaecf4; 
+    padding-top: 25px; 
+}
+
+.btn { 
+    padding: 12px 30px; 
+    border-radius: 50px; 
+    border: none; 
+    cursor: pointer; 
+    text-decoration: none; 
+    font-weight: 600; 
+    display: inline-flex; 
+    align-items: center; 
+    justify-content: center; 
+    transition: all 0.2s;
+}
+
+.btn-primary { 
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff; 
+    box-shadow: 0 4px 10px rgba(118, 75, 162, 0.3);
+}
+.btn-primary:hover { 
+    transform: translateY(-2px); 
+    box-shadow: 0 6px 15px rgba(118, 75, 162, 0.5);
+}
+
+.btn-secondary { 
+    background-color: #858796; 
+    color: #fff; 
+}
+.btn-secondary:hover { background-color: #60616f; }
+
+/* =========================================
+   5. FORMS & INPUTS
+   ========================================= */
+.form-group { margin-bottom: 25px; }
+
+.form-group label { 
+    display: block; 
+    font-weight: 600; 
+    margin-bottom: 8px; 
+    color: #5a5c69;
+}
+
+.form-control {
+    width: 100%; 
+    padding: 12px 15px; 
+    border: 1px solid #d1d3e2;
+    border-radius: 8px; 
+    font-size: 15px; 
+    color: #6e707e;
+    box-sizing: border-box; 
+    transition: all 0.3s ease;
+}
+
+.form-control:focus { 
+    border-color: #4e73df; 
+    box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25); 
+    outline: none; 
+}
+
+/* Layout chia cột trong form */
+.form-row { 
+    display: flex; 
+    gap: 25px; 
+    flex-wrap: wrap; 
+}
+.form-col { 
+    flex: 1; 
+    min-width: 250px; 
+}
+
+/* Thông báo lỗi */
+.text-danger { 
+    color: #e74a3b; 
+    font-size: 0.85rem; 
+    margin-top: 5px; 
+    display: block; 
+    font-style: italic; 
+}
+
+/* =========================================
+   6. TABLES (Bảng dữ liệu)
+   ========================================= */
+.table-responsive { overflow-x: auto; }
+
+.table-custom { 
+    width: 100%; 
+    border-collapse: collapse; 
+}
+
+.table-custom thead {
+    background-color: #f8f9fc;
+    color: #8898aa;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.table-custom th { 
+    padding: 15px 25px; 
+    text-align: left; 
+    border-bottom: 1px solid #e3e6f0; 
+}
+
+.table-custom td {
+    padding: 15px 25px;
+    vertical-align: middle;
+    border-bottom: 1px solid #edf2f9;
+    color: #525f7f;
+    font-size: 0.9rem;
+}
+
+.table-custom tbody tr:hover { background-color: #fafbfc; }
+
+/* =========================================
+   7. UTILITIES & IMAGES
+   ========================================= */
+
+/* Ảnh thumbnail trong bảng */
+.course-img-box {
+    width: 80px; 
+    height: 50px;
+    border-radius: 6px; 
+    overflow: hidden;
+    border: 1px solid #eee;
+}
+.course-img-box img { 
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover; 
+}
+
+/* Ảnh preview khi upload trong Form */
+.img-preview {
+    margin-top: 15px;
+    max-width: 300px; /* Giới hạn chiều rộng để không vỡ layout */
+    max-height: 200px;
+    border-radius: 10px;
+    border: 2px dashed #d1d3e2;
+    padding: 5px;
+    display: none; /* JS sẽ xử lý hiển thị khi có file */
+    object-fit: cover;
+}
+
+/* Badges (Nhãn) */
+.badge-cat {
+    background-color: #e3f2fd; 
+    color: #1976d2;
+    padding: 5px 10px; 
+    border-radius: 20px;
+    font-size: 11px; 
+    font-weight: 700;
+}
+
+.price-text {
+    color: #d63384; 
+    font-weight: 700;
+    background: #fff0f6; 
+    padding: 4px 8px; 
+    border-radius: 4px;
+}
