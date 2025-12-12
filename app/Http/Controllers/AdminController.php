@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Course;
+use App\Models\Enrollment;
 use App\Models\User;
 
 use Illuminate\Http\Request;
@@ -115,8 +116,8 @@ class AdminController extends Controller
   // [get] /admin/courses
   public function listCourses()
   {
-    $courses = Course::where("is_deleted" , 0 )
-      ->orderBy("id" , "desc")
+    $courses = Course::where("is_deleted", 0)
+      ->orderBy("id", "desc")
       ->get();
     return view("admin.courses.index", [
       "title" => "List courses",
@@ -124,6 +125,7 @@ class AdminController extends Controller
     ]);
   }
 
+  // [post] /admin/course/approve/{id}.
   public function approveCourse($id)
   {
     $course = Course::findOrFail($id);
@@ -131,5 +133,38 @@ class AdminController extends Controller
     $course->save();
 
     return redirect()->route('admin.courses')->with('success', 'Course approved successfully.');
+  }
+
+  // [get] /admin/report
+  public function report()
+  {
+    
+    $totalRevenue = Enrollment::join('courses', 'enrollments.course_id', '=', 'courses.id')
+      ->sum('courses.price'); 
+
+    $totalStudents = User::where('role', 0)->count();
+    $newEnrollmentsThisMonth = Enrollment::whereMonth('enrolled_date', date('m'))
+      ->whereYear('enrolled_date', date('Y'))
+      ->count();
+
+    // 2. Top 5 Khóa học bán chạy nhất (Dựa trên số lượng enrollment)
+    // Yêu cầu Model Course phải có: public function enrollments() { return $this->hasMany(Enrollment::class); }
+    $topCourses = Course::withCount('enrollments')
+      ->orderBy('enrollments_count', 'desc')
+      ->take(5)
+      ->get();
+
+    // 3. Thống kê theo Danh mục (Có bao nhiêu khóa học trong mỗi danh mục)
+    // Yêu cầu Model Category có: public function courses() { return $this->hasMany(Course::class); }
+    $categoriesStats = Category::withCount('courses')->get();
+
+    return view("admin.report.statistics", [
+      "title" => "Báo cáo thống kê",
+      "totalRevenue" => $totalRevenue,
+      "totalStudents" => $totalStudents,
+      "newEnrollments" => $newEnrollmentsThisMonth,
+      "topCourses" => $topCourses,
+      "categoriesStats" => $categoriesStats
+    ]);
   }
 }
