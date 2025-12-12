@@ -64,7 +64,7 @@ class CourseController extends Controller
     $isEnrolled = false;
     if (auth()->check()) {
         // Kiểm tra xem người dùng đã đăng nhập có enrollment cho khóa học này không
-        $isEnrolled = Enrollment::where('user_id', auth()->id())
+        $isEnrolled = Enrollment::where('student_id', auth()->id())
                                 ->where('course_id', $id)
                                 ->exists();
     }

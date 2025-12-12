@@ -18,8 +18,8 @@
                     // Lấy đối tượng Course từ quan hệ Enrollment
                     $course = $enrollment->course;
                     
-                    // SỬ DỤNG TÊN TRƯỜNG CHÍNH XÁC: progress_percentage
-                    $progress = $enrollment->progress_percentage ?? 0; 
+                    // ĐÃ SỬA: SỬ DỤNG TÊN TRƯỜNG CHÍNH XÁC LÀ 'progress'
+                    $progress = $enrollment->progress ?? 0; 
                     
                     // Thiết lập màu cho thanh tiến độ
                     $progress_class = $progress == 100 ? 'bg-success' : 'bg-info';
@@ -44,7 +44,10 @@
                             
                             {{-- Thanh tiến độ --}}
                             <div class="mb-3 mt-auto">
+                                {{-- Tiêu đề hiển thị đúng --}}
                                 <p class="small mb-1 fw-bold">Tiến độ hiện tại:</p>
+                                
+                                {{-- KHỐI PROGRESS BAR ĐÃ ĐƯỢC CHÈN ĐÚNG --}}
                                 <div class="progress" style="height: 20px;">
                                     <div class="progress-bar {{ $progress_class }}" role="progressbar" style="width: {{ $progress }}%;" aria-valuenow="{{ $progress }}" aria-valuemin="0" aria-valuemax="100">
                                         {{ $progress }}%

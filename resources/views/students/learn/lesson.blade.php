@@ -20,8 +20,9 @@
                 
                 {{-- Thanh điều hướng nhanh --}}
                 <p class="text-muted small">
-                    <a href="{{ route('student.progress', $course->id) }}">
-                        <i class="fas fa-chevron-left"></i> Quay lại Tiến độ Khóa học: {{ $course->title }}
+                    <a href="{{ route('student.progress', $lesson->course->id) }}">
+                        {{-- ĐÃ SỬA: Dùng $lesson->course->title để khắc phục lỗi Undefined variable $course và lỗi cú pháp $$. --}}
+                        <i class="fas fa-chevron-left"></i> Quay lại Tiến độ Khóa học: {{ $lesson->course->title }}
                     </a>
                 </p>
 
@@ -70,7 +71,8 @@
                         <i class="fas fa-paperclip me-1"></i> Tài liệu Kèm theo
                     </div>
                     <ul class="list-group list-group-flush">
-                        @forelse ($materials as $material)
+                        {{-- ĐÃ SỬA: Dùng $lesson->materials thay vì $materials để khắc phục lỗi Undefined variable $materials --}}
+                        @forelse ($lesson->materials as $material) 
                             <li class="list-group-item d-flex justify-content-between align-items-center">
                                 <span><i class="fas fa-file-alt me-1"></i> {{ $material->filename }}</span>
                                 

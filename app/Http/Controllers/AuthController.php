@@ -38,7 +38,7 @@ class AuthController extends Controller
             // CHUYỂN HƯỚNG DỰA TRÊN ROLE
             if ($user->role == 0) {
                 // Học viên: Chuyển hướng đến Dashboard/Home học viên
-              return redirect()->route('student.home')->with('success', 'Đăng nhập thành công!');            }
+              return redirect()->route('student.courses.index')->with('success', 'Đăng nhập thành công!');            }
 
             if ($user->role == 1) {
                 // Giảng viên: Chuyển hướng đến Dashboard giảng viên (admin/dashboard)
@@ -59,4 +59,12 @@ class AuthController extends Controller
     {
         return view("auth.register");
     }
+
+    public function logout(Request $request)
+{
+    Auth::logout();
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
+    return redirect('/auth/login')->with('success', 'Bạn đã đăng xuất thành công.');
+}
 }

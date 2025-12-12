@@ -1,0 +1,394 @@
+/* ===== MY COURSES PAGE - LIGHT THEME ===== */
+
+/* ===== COLOR VARIABLES ===== */
+:root {
+    --primary-color: #3b82f6;
+    --success-color: #10b981;
+    --info-color: #06b6d4;
+    --light-bg: #f8fafc;
+    --card-bg: #ffffff;
+    --border-color: #e2e8f0;
+    --text-primary: #1e293b;
+    --text-muted: #64748b;
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* ===== GLOBAL STYLES ===== */
+body {
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    color: var(--text-primary);
+}
+
+.container {
+    max-width: 1200px;
+}
+
+/* ===== PAGE HEADING ===== */
+h1.text-primary {
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+h1.text-primary i {
+    background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* ===== ALERTS ===== */
+.alert {
+    border-radius: 12px;
+    border: none;
+    box-shadow: var(--shadow-sm);
+    font-weight: 500;
+}
+
+.alert-success {
+    background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+    color: #065f46;
+}
+
+.alert-info {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    color: #1e40af;
+    border: 2px solid #93c5fd;
+}
+
+.alert-heading {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.alert i {
+    margin-right: 0.5rem;
+}
+
+/* ===== COURSE CARDS ===== */
+.card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: var(--shadow-sm);
+}
+
+.card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: var(--shadow-md), 0 0 30px rgba(59, 130, 246, 0.15);
+    border-color: var(--primary-color);
+}
+
+/* ===== COURSE IMAGE ===== */
+.card-img-top,
+.course-image-sm {
+    height: 200px;
+    object-fit: cover;
+    transition: all 0.4s ease;
+    border-bottom: 3px solid var(--primary-color);
+}
+
+.card:hover .card-img-top {
+    transform: scale(1.1);
+}
+
+.course-image-sm.bg-light {
+    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%) !important;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+}
+
+/* ===== CARD BODY ===== */
+.card-body {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.card-title {
+    color: var(--text-primary);
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    line-height: 1.4;
+}
+
+.card-text {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.card-text i {
+    color: var(--primary-color);
+    margin-right: 0.25rem;
+}
+
+/* ===== PROGRESS SECTION ===== */
+.mb-3.mt-auto {
+    margin-top: auto !important;
+}
+
+.mb-3 p.small {
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+/* ===== PROGRESS BAR ===== */
+.progress {
+    height: 24px !important;
+    background: #e2e8f0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.progress-bar {
+    font-weight: 700;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: width 0.6s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.progress-bar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        left: -100%;
+    }
+    100% {
+        left: 100%;
+    }
+}
+
+.progress-bar.bg-info {
+    background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+    box-shadow: 0 2px 8px rgba(6, 182, 212, 0.3);
+}
+
+.progress-bar.bg-success {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+/* ===== BUTTONS ===== */
+.btn-primary {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    border: none;
+    color: white;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+    color: white;
+}
+
+.btn-primary i {
+    font-size: 1rem;
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    border: none;
+    color: white;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.btn-success:hover {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+    color: white;
+}
+
+/* ===== EMPTY STATE ===== */
+.alert-info.text-center {
+    padding: 3rem 2rem !important;
+    border-radius: 16px;
+}
+
+.alert-info .btn {
+    margin-top: 1rem;
+    padding: 0.75rem 2rem;
+}
+
+/* ===== PAGINATION ===== */
+.pagination {
+    --bs-pagination-bg: var(--card-bg);
+    --bs-pagination-border-color: var(--border-color);
+    --bs-pagination-color: var(--text-primary);
+    --bs-pagination-hover-bg: #f1f5f9;
+    --bs-pagination-hover-border-color: var(--primary-color);
+    --bs-pagination-hover-color: var(--primary-color);
+    --bs-pagination-focus-bg: var(--primary-color);
+    --bs-pagination-focus-color: #ffffff;
+    --bs-pagination-active-bg: var(--primary-color);
+    --bs-pagination-active-border-color: var(--primary-color);
+    --bs-pagination-disabled-bg: var(--light-bg);
+    --bs-pagination-disabled-color: var(--text-muted);
+}
+
+.pagination .page-link {
+    transition: all 0.3s ease;
+    font-weight: 500;
+    border-radius: 8px;
+    margin: 0 0.25rem;
+}
+
+.pagination .page-link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 991px) {
+    h1.text-primary {
+        font-size: 2rem;
+    }
+    
+    .card-img-top,
+    .course-image-sm {
+        height: 180px;
+    }
+}
+
+@media (max-width: 576px) {
+    h1.text-primary {
+        font-size: 1.5rem;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+    
+    .card-img-top,
+    .course-image-sm {
+        height: 160px;
+    }
+    
+    .btn-primary {
+        padding: 0.625rem 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .progress {
+        height: 20px !important;
+    }
+    
+    .alert-info.text-center {
+        padding: 2rem 1rem !important;
+    }
+}
+
+/* ===== ANIMATION ===== */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.card:nth-child(1) { animation-delay: 0.1s; }
+.card:nth-child(2) { animation-delay: 0.2s; }
+.card:nth-child(3) { animation-delay: 0.3s; }
+.card:nth-child(4) { animation-delay: 0.4s; }
+.card:nth-child(5) { animation-delay: 0.5s; }
+.card:nth-child(6) { animation-delay: 0.6s; }
+
+/* ===== COMPLETED COURSE BADGE ===== */
+.card-body .btn-primary i.fa-certificate {
+    color: #fbbf24;
+    text-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+}
+
+/* ===== HOVER EFFECTS ===== */
+.card:hover .card-title {
+    color: var(--primary-color);
+}
+
+.card:hover .progress-bar {
+    animation: progressPulse 1s ease-in-out infinite;
+}
+
+@keyframes progressPulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.85;
+    }
+}
+
+/* ===== TEXT UTILITIES ===== */
+.text-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.fw-bold {
+    font-weight: 700 !important;
+}
+
+.small {
+    font-size: 0.875rem;
+}
+
+/* ===== SMOOTH SCROLLING ===== */
+html {
+    scroll-behavior: smooth;
+}
+
+/* ===== SELECTION ===== */
+::selection {
+    background: var(--primary-color);
+    color: white;
+}

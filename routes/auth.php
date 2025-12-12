@@ -22,3 +22,9 @@ Route::get(
   '/register',
   [AuthController::class, "register"]
 );
+
+// [post] /auth/logout
+Route::post(
+    '/logout',
+    [AuthController::class, "logout"] 
+)->name('logout');

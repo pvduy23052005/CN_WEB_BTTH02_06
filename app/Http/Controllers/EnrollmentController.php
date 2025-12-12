@@ -49,6 +49,7 @@ class EnrollmentController extends Controller
             'course_id' => $courseId,
             'enrolled_date' => Carbon::now(),
             'progress' => 0, 
+            'status' => 'active',
         ]);
 
         return redirect()->route('student.home')->with('success', 'Đăng ký khóa học thành công!');

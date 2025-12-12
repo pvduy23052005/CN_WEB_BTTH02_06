@@ -13,11 +13,13 @@
             {{-- Dashboard --}}
             <a href="{{ url('/student') }}" class="menu-item-icon me-3" title="Dashboard">
                 <i class="fas fa-tachometer-alt fa-lg"></i>
+                <span>Khóa học</span>
             </a>
             
             {{-- Khóa học của tôi --}}
             <a href="{{ route('student.home') }}" class="menu-item-icon me-3" title="Khóa học của tôi">
                 <i class="fas fa-book-open fa-lg"></i>
+                <p>Khóa học của tôi</p>
             </a>
             
             {{-- Thông báo --}}
@@ -26,12 +28,34 @@
                 <span class="badge">3</span>
             </div>
 
-            {{-- Tài khoản --}}
-            <div class="account">
-                <img id="avatarPreview" src="{{ asset('default-avatar.png') }}" alt="Avatar">
-                <span>{{ Auth::user()->name ?? 'Tài khoản' }}</span>
-                <i class="fa-solid fa-chevron-down"></i>
-                <input type="file" id="avatarUpload" accept="image/*" hidden>
+            {{-- Tài khoản với Dropdown --}}
+            <div class="account-wrapper">
+                <div class="account">
+                    <img id="avatarPreview" src="{{ asset('default-avatar.png') }}" alt="Avatar">
+                    <span>{{ Auth::user()->name ?? 'Tài khoản' }}</span>
+                    <i class="fa-solid fa-chevron-down"></i>
+                    <input type="file" id="avatarUpload" accept="image/*" hidden>
+                </div>
+                
+                {{-- Dropdown Menu --}}
+                <div class="account-dropdown">
+                    <a href="#" class="dropdown-item">
+                        <i class="fas fa-user"></i>
+                        <span>Hồ sơ của tôi</span>
+                    </a>
+                    <a href="" class="dropdown-item">
+                        <i class="fas fa-cog"></i>
+                        <span>Cài đặt</span>
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <form method="POST" action="{{ route('auth.logout') }}" class="m-0">
+                        @csrf
+                        <button type="submit" class="dropdown-item logout-btn">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Đăng xuất</span>
+                        </button>
+                    </form>
+                </div>
             </div>
             
         @else
