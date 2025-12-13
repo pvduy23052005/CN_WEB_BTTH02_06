@@ -125,7 +125,7 @@
 
                             {{-- 5. Ngày tạo --}}
                             <td>
-                                {{ $lesson->created_at ? $lesson->created_at->format('d/m/Y') : 'N/A' }}
+                                {{ $lesson->created_at ? date('d/m/Y', strtotime($lesson->created_at)) : 'N/A' }}
                             </td>
 
                             {{-- 6. Hành động --}}
