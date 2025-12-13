@@ -21,9 +21,8 @@ class AdminController extends Controller
     $totalCourses = Course::count();                       // Tổng khóa học
     $pendingCoursesCount = Course::where('is_active', 0)->count(); // Khóa chờ duyệt
 
-    // 2. Lấy danh sách 5 khóa học mới nhất đang chờ duyệt (để Admin xử lý nhanh)
     $pendingCourses = Course::where('is_active', 0)
-      ->with('instructor') // Load thông tin giảng viên
+      ->with('instructor') 
       ->orderBy('id', 'desc')
       ->take(5)
       ->get();
@@ -171,16 +170,12 @@ class AdminController extends Controller
   // [post] /admin/logout
   public function logoutAdmin(Request $request)
   {
-      // 1. Đăng xuất user hiện tại
       Auth::logout();
 
-      // 2. Hủy session hiện tại (để không ai dùng lại được)
       $request->session()->invalidate();
 
-      // 3. Tạo lại CSRF token mới (để bảo mật cho phiên tiếp theo)
       $request->session()->regenerateToken();
 
-      // 4. Chuyển hướng về trang đăng nhập
       return redirect('/auth/login')->with('success', 'Đăng xuất thành công!');
   }
 }

@@ -164,7 +164,6 @@
     .icon { width: 18px; height: 18px; }
   </style>
 
-  {{-- 1. Thông báo Thành công --}}
   @if(session('success'))
     <div class="alert alert-success">
       <svg class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">

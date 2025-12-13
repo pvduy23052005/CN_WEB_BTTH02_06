@@ -25,7 +25,6 @@ class RoleMiddleware
     // 2. Lấy user hiện tại
     $user = Auth::user();
 
-    // 3. Convert roles từ string sang integer
     // Vì từ route truyền vào là string: 'role:0,1,2'
     $allowedRoles = array_map('intval', $roles);
 

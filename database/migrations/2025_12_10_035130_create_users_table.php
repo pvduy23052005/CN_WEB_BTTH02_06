@@ -21,13 +21,10 @@ return new class extends Migration
       $table->string('password', 255);
       $table->string('fullname', 255)->nullable(); // Giả sử có thể null
 
-      // Trường INTEGER
       $table->integer('role')->default(0); // Giả sử có giá trị mặc định
 
-      // Trường BIT (Boolean)
-      $table->boolean('deleted')->default(false);
+      $table->boolean('deleted')->default(0);
 
-      // Nếu bạn muốn dùng timestamp chuẩn của Laravel (created_at và updated_at):
       $table->timestamps();
     });
   }
