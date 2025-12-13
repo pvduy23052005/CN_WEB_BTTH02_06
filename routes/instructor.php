@@ -2,28 +2,41 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\LessonController;
 
 
-
-// Route::middleware(['auth', 'role:0'])->group(function ()
-Route::middleware(['auth', 'role:1'])->group(function () {
-    
-    // 1. Hiển thị danh sách
 Route::get('/courses', [CourseController::class, 'index'])->name('courses.index');
 
-// 2. Hiển thị form thêm mới (phải đặt trước route có {id} để tránh lỗi)
 Route::get('/courses/create', [CourseController::class, 'create'])->name('courses.create');
 
-// 3. Xử lý lưu dữ liệu mới (Method POST)
 Route::post('/courses', [CourseController::class, 'store'])->name('courses.store');
 
-// 4. Hiển thị form sửa (cần truyền id)
-Route::get('/courses/{id}/edit', [CourseController::class, 'edit'])->name('courses.edit');
+Route::get('/courses/{course}/edit', [CourseController::class, 'edit'])->name('courses.edit');
 
-// 5. Xử lý cập nhật dữ liệu (Method PUT)
-Route::put('/courses/{id}', [CourseController::class, 'update'])->name('courses.update');
+Route::put('/courses/{course}', [CourseController::class, 'update'])->name('courses.update');
 
-// 6. Xử lý xóa (Method DELETE)
-Route::delete('/courses/{id}', [CourseController::class, 'destroy'])->name('courses.destroy');
-    
+Route::delete('/courses/{course}', [CourseController::class, 'destroy'])->name('courses.destroy');
+
+
+
+
+
+Route::prefix('courses/{course}')->name('lessons.')->group(function () {
+
+    Route::get('/lessons', [LessonController::class, 'index'])->name('index');
+
+    Route::get('/lessons/create', [LessonController::class, 'create'])->name('create');
+
+    Route::post('/lessons', [LessonController::class, 'store'])->name('store');
+
+    Route::get('/lessons/{lesson}/edit', [LessonController::class, 'edit'])->name('edit');
+
+    Route::put('/lessons/{lesson}', [LessonController::class, 'update'])->name('update');
+
+    Route::delete('/lessons/{lesson}', [LessonController::class, 'destroy'])->name('destroy');
+
+
+
+
+
 });

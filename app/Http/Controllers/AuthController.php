@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth; 
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 class AuthController extends Controller
@@ -24,13 +24,10 @@ class AuthController extends Controller
       'password' => 'required|min:6'
     ]);
 
-
-    // 2. TẠO THÔNG TIN XÁC THỰC
     $user = User::where('email', $request->email)->first();
-    // 3. XÁC THỰC BẰNG HASHING CHUẨN CỦA LARAVEL
+
     if ($user && $user->password === $request->password) {
 
-      // XÁC THỰC THÀNH CÔNG
       Auth::login($user);
 
       if ($user->role == 0) {
@@ -39,20 +36,16 @@ class AuthController extends Controller
       }
 
       if ($user->role == 1) {
-        // Giảng viên: Chuyển hướng đến Dashboard giảng viên (admin/dashboard)
         return redirect('instructor/courses')->with('success', 'Đăng nhập thành công!');
       }
 
       if ($user->role == 2) {
-        // Giảng viên: Chuyển hướng đến Dashboard giảng viên (admin/dashboard)
         return redirect('/admin/dashboard')->with('success', 'Đăng nhập thành công!');
       }
 
-      // Trường hợp lỗi role:
       return redirect('/')->with('error', 'Đăng nhập thành công, nhưng không có quyền truy cập.');
     }
 
-    // XÁC THỰC THẤT BẠI
     return back()->with('error', 'Email hoặc mật khẩu không chính xác.');
   }
 
@@ -65,13 +58,10 @@ class AuthController extends Controller
 
   public function registerPost(Request $req)
   {
-    // Kiểm tra email đã tồn tại chưa
     if (User::where('email', $req->email)->exists()) {
       return back()->withErrors(['email' => 'Email đã được sử dụng!'])->withInput();
-
     }
 
-    // Kiểm tra username đã tồn tại chưa
     if (User::where('username', $req->username)->exists()) {
       return back()->withErrors(['username' => 'Tên đăng nhập đã tồn tại!'])->withInput();
     }
@@ -100,7 +90,7 @@ class AuthController extends Controller
 
 
   public function logout(Request $request)
-{
+  {
     // Đăng xuất người dùng hiện tại
     Auth::logout();
 
@@ -112,6 +102,5 @@ class AuthController extends Controller
 
     // Chuyển hướng người dùng về trang đăng nhập hoặc trang chủ
     return redirect('/auth/login')->with('success', 'Bạn đã đăng xuất thành công.');
+  }
 }
-}
-

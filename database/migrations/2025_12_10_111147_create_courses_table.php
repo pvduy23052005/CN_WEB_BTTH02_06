@@ -12,6 +12,7 @@ return new class extends Migration
   public function up()
   {
     Schema::create('courses', function (Blueprint $table) {
+
       $table->id();
       $table->string('title');
       $table->text('description');
@@ -24,8 +25,7 @@ return new class extends Migration
       $table->timestamp('created_at')->nullable();
       $table->timestamp('updated_at')->nullable();
       $table->integer('is_deleted')->default(0);
-      $table->boolean('is_active')->default(0); // Mặc định là 0 (Chưa active)
-
+      $table->boolean('is_active')->default(0);
       $table->foreign('instructor_id')->references('id')->on('users');
       $table->foreign('category_id')->references('id')->on('categories');
     });

@@ -6,9 +6,7 @@ use App\Http\Controllers\Controller;
 
 use App\Http\Controllers\AuthController;
 
-// Tất cả route trong file này tự động có prefix: /admin
-// Và name prefix: admin.
-
+// prefix: admin.
 Route::middleware(['auth', 'role:2'])->group(function () {
 
   // /admin/dashboard -> route name: admin.dashboard
@@ -16,6 +14,7 @@ Route::middleware(['auth', 'role:2'])->group(function () {
 
   // Category routes
   Route::prefix('category')->name('category.')->group(function () {
+
     // /admin/category -> admin.category.index
     Route::get('/', [AdminController::class, 'category'])->name('index');
 
@@ -28,13 +27,15 @@ Route::middleware(['auth', 'role:2'])->group(function () {
     Route::post('/edit/{id}', [AdminController::class, 'editPost'])->name('update');
   });
 
+  // /courses
   Route::get('/courses', [AdminController::class, 'listCourses'])->name('courses');
 
+  // report
   Route::post("/course/approve/{id}", [AdminController::class, "approveCourse"])->name("course.approve");
 
-  // /admin/report  
+  // /report  
   Route::get("/report", [AdminController::class, "report"]);
   
-  // /admin/users -> admin.users
+  // /users 
   Route::get('/users', [AdminController::class, 'listUsers'])->name('users');
 });

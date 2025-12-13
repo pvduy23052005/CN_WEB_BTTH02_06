@@ -30,4 +30,5 @@ class Material extends Model
     {
         return $this->belongsTo(Lesson::class, 'lesson_id');
     }
+   
 }
