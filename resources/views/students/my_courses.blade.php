@@ -29,7 +29,7 @@
                     <div class="card h-100 shadow-sm border-0">
                         {{-- Hình ảnh khóa học --}}
                         @if ($course->image)
-                            <img src="{{ asset('assets/uploads/courses/' . $course->image) }}" class="card-img-top course-image-sm" alt="{{ $course->title }}">
+                            <img src="{{ asset( $course->image) }}" class="card-img-top course-image-sm" alt="{{ $course->title }}">
                         @else
                             <div class="course-image-sm bg-light text-center p-3 text-muted">
                                 [Hình ảnh khóa học]

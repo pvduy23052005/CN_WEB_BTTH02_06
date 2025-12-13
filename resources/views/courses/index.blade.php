@@ -53,7 +53,7 @@
                         @if ($course->image)
                             {{-- Giả định: $course->image chỉ chứa tên file (ví dụ: 'image.jpg') --}}
                             {{-- Và file được lưu trong thư mục public/assets/uploads/courses/ --}}
-                            <img src="{{ asset('assets/uploads/courses/' . $course->image) }}" 
+                            <img src="{{ asset($course->image) }}" 
                                  class="card-img-top course-image-sm" 
                                  alt="{{ $course->title }}">
                         @else
