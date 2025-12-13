@@ -131,7 +131,7 @@ class AdminController extends Controller
     $course->is_active = 1;
     $course->save();
 
-    return redirect()->route('admin.courses')->with('success', 'Course approved successfully.');
+    return redirect()->route('admin.courses')->with('success', 'Thành công');
   }
 
   // [get] /admin/report
