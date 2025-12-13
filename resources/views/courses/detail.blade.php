@@ -67,7 +67,9 @@
             <div class="col-lg-4">
                 <div class="card shadow-lg sticky-top" style="top: 20px;">
                     @if ($course->image)
-                        <img src="{{ asset( $course->image) }}" alt="{{ $course->title }}" class="card-img-top">
+
+                        <img src="{{ asset ($course->image) }}" alt="{{ $course->title }}" class="card-img-top">
+
                     @endif
                     
                     <div class="card-body text-center">

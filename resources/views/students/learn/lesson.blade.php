@@ -31,14 +31,28 @@
                 <div class="lesson-content bg-white p-4 shadow-sm rounded">
                     
                     {{-- 1. HIỂN THỊ VIDEO --}}
-                    @if ($lesson->video_url)
-                        <div class="ratio ratio-16x9 mb-4">
-                            {{-- Giả định video_url là iframe hoặc link có thể nhúng được --}}
-                            <iframe src="{{ $lesson->video_url }}" allowfullscreen 
-                                    frameborder="0" allow="autoplay; encrypted-media"></iframe>
-                        </div>
-                    @endif
-                    
+                    {{-- 1. HIỂN THỊ VIDEO --}}
+@if ($lesson->video_url)
+    <div class="ratio ratio-16x9 mb-4">
+        @php
+            // Kiểm tra xem đây có phải là một đường dẫn nhúng (URL) hay là đường dẫn file cục bộ
+            $isEmbedUrl = str_contains($lesson->video_url, 'http') || str_contains($lesson->video_url, 'www');
+        @endphp
+
+        @if ($isEmbedUrl)
+            {{-- TRƯỜNG HỢP A: VIDEO NHÚNG (YOUTUBE/VIMEO) --}}
+            <iframe src="{{ $lesson->video_url }}" allowfullscreen 
+                    frameborder="0" allow="autoplay; encrypted-media"></iframe>
+        @else
+            {{-- TRƯỜNG HỢP B: VIDEO TỰ TẢI LÊN (FILE CỤC BỘ) --}}
+            <video controls class="w-100 h-100" poster="{{ asset('placeholder.jpg') }}">
+                <source src="{{ asset($lesson->video_url) }}" type="video/mp4">
+                {{-- Bạn có thể thêm các định dạng khác nếu cần --}}
+                Trình duyệt của bạn không hỗ trợ thẻ video.
+            </video>
+        @endif
+    </div>
+@endif
                     {{-- 2. NỘI DUNG TEXT/MÔ TẢ --}}
                     <h3 class="text-secondary mt-4">Nội dung Bài học</h3>
                     <div class="content-text mt-3">
@@ -77,7 +91,7 @@
                                 <span><i class="fas fa-file-alt me-1"></i> {{ $material->filename }}</span>
                                 
                                 {{-- Liên kết tải xuống file --}}
-                                <a href="{{ asset('assets/uploads/materials/' . $material->file_path) }}" 
+                                <a href="{{ asset( $material->file_path) }}" 
                                    target="_blank" class="btn btn-sm btn-outline-secondary">
                                     <i class="fas fa-download"></i>
                                 </a>
