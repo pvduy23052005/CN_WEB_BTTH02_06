@@ -22,7 +22,7 @@ class Material extends Model
         'file_type',
         'uploaded_at', // Cần liệt kê nếu muốn gán giá trị thủ công
     ];
-
+  
     /**
      * Mối quan hệ: Một Material thuộc về một Lesson.
      */

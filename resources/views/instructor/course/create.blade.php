@@ -2,7 +2,6 @@
 @section('main-content')
 
 <div class="admin-content-wrapper">
-    
     <div class="course-form-card">
         <h1>Thêm Khóa Học Mới</h1>
         <form action="{{ route('instructor.courses.store') }}" method="POST" enctype="multipart/form-data">

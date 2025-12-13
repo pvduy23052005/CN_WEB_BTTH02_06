@@ -19,7 +19,7 @@ Route::delete('/courses/{course}', [CourseController::class, 'destroy'])->name('
 
 
 
-
+Route::get('/courses/{course}/students', [CourseController::class, 'students'])->name('courses.students');
 
 Route::prefix('courses/{course}')->name('lessons.')->group(function () {
 
@@ -34,9 +34,5 @@ Route::prefix('courses/{course}')->name('lessons.')->group(function () {
     Route::put('/lessons/{lesson}', [LessonController::class, 'update'])->name('update');
 
     Route::delete('/lessons/{lesson}', [LessonController::class, 'destroy'])->name('destroy');
-
-
-
-
-
+   
 });

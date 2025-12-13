@@ -35,4 +35,9 @@ class Enrollment extends Model
     {
         return $this->belongsTo(Course::class, 'course_id');
     }
+    public function student()
+{
+    // Liên kết khóa ngoại student_id với bảng users
+    return $this->belongsTo(User::class, 'student_id');
+}
 }

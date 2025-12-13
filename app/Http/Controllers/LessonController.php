@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Enrollment;
 use Illuminate\Support\Facades\Gate; // Có thể dùng Gate/Policy để bảo mật
 use App\Models\LessonCompletion;
+use Carbon\Carbon;
+use App\Models\Material;
 class LessonController extends Controller
 {
     
@@ -38,48 +40,27 @@ class LessonController extends Controller
 
      //phần instructor
     // [GET] /instructor/courses/{course}/lessons
-
-    public function index(Course $course)
-
-    {
-
-        // 1. CHECK QUYỀN: So khớp ID giảng viên
-
-        if ($course->instructor_id != Auth::id()) {
-
-            return redirect()->route('instructor.courses.index')
-
-                ->with('msg', 'Bạn không có quyền quản lý bài học của khóa này!');
-
-        }
-
-
-
-        // 2. Lấy danh sách lesson (chưa xóa mềm)
-
-        $lessons = $course->lessons()
-
-            ->where('is_deleted', 0)
-
-            ->orderBy('order', 'asc') // Sắp xếp theo thứ tự hiển thị (hoặc id)
-
-            ->orderBy('id', 'asc')
-
-            ->get();
-
-
-
-        return view('instructor.lessons.index', [
-
-            'title' => "Quản lý bài học: " . $course->title,
-
-            'course' => $course,
-
-            'lessons' => $lessons
-
-        ]);
-
+public function index(Course $course)
+{
+    if ($course->instructor_id != Auth::id()) {
+        return redirect()->route('instructor.courses.index')
+            ->with('msg', 'Bạn không có quyền quản lý bài học của khóa này!');
     }
+
+    // Lấy lessons kèm theo materials (Eager Loading)
+    $lessons = $course->lessons()
+        ->with('materials') // <--- QUAN TRỌNG: Load thêm bảng materials
+        ->where('is_deleted', 0)
+        ->orderBy('order', 'asc')
+        ->orderBy('id', 'asc')
+        ->get();
+
+    return view('instructor.lessons.index', [
+        'title' => "Quản lý bài học: " . $course->title,
+        'course' => $course,
+        'lessons' => $lessons
+    ]);
+}
 
 
 
@@ -111,98 +92,72 @@ class LessonController extends Controller
 
 
 
-    // [POST] /instructor/courses/{course}/lessons
-
+   // [POST] /instructor/courses/{course}/lessons
     public function store(Request $request, Course $course)
-
     {
-
         // 1. Check quyền
-
         if ($course->instructor_id != Auth::id()) {
-
             abort(403, 'Unauthorized action.');
-
         }
 
-
-
-        // 2. Validate dữ liệu đầu vào
-
+        // 2. Validate
         $request->validate([
-
             'title' => 'required|max:255',
-
             'video_url' => 'nullable|url',
-
-            'duration' => 'nullable|numeric',
-
-            // Validate tài liệu (Max 10MB)
-
+            'video_file' => 'nullable|mimes:mp4,mov,ogg,qt|max:500000',
             'document_file' => 'nullable|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,zip,rar|max:10240',
-
         ]);
 
-
-
-        $data = $request->all();
-
-       
-
+        $data = $request->except(['video_file', 'document_file']);
         $data['course_id'] = $course->id;
-
         $data['is_deleted'] = 0;
 
-
-
-        // 3. Xử lý upload VIDEO
-
+        // 3. Xử lý Video (Giữ nguyên)
         if ($request->hasFile('video_file')) {
-
             $file = $request->file('video_file');
-
-            // Thêm tiền tố _vid_ để tránh trùng tên
-
             $filename = time() . '_vid_' . $file->getClientOriginalName();
-
-            $file->move(public_path('uploads/lessons'), $filename);
-
-           
-
+            $file->move(public_path('uploads/lessons'), $filename); 
             $data['video_url'] = 'uploads/lessons/' . $filename;
-
         }
 
+        // 4. TẠO LESSON TRƯỚC (QUAN TRỌNG: Để lấy được ID bài học)
+        $newLesson = Lesson::create($data);
 
-
-        // 4. Xử lý upload TÀI LIỆU (Mới thêm)
-
+        // 5. Xử lý Tài liệu (SỬA ĐOẠN NÀY)
         if ($request->hasFile('document_file')) {
-
             $docFile = $request->file('document_file');
+            $originalName = $docFile->getClientOriginalName();
+            $extension = $docFile->getClientOriginalExtension();
+            
+            // --- TẠO ĐƯỜNG DẪN THEO ID BÀI HỌC ---
+            // Ví dụ lesson id = 15 thì folder là: materials/lesson15
+            $folderName = 'materials/lesson' . $newLesson->id;
+            
+            // Đường dẫn tuyệt đối trên server
+            $destinationPath = public_path($folderName);
 
-            // Thêm tiền tố _doc_
-
-            $docName = time() . '_doc_' . $docFile->getClientOriginalName();
-
-            $docFile->move(public_path('uploads/documents'), $docName);
-
-           
-
-            $data['document_url'] = 'uploads/documents/' . $docName;
-
+            // Kiểm tra nếu folder chưa có thì tạo mới
+            if (!file_exists($destinationPath)) {
+                mkdir($destinationPath, 0777, true);
+            }
+            
+            // Di chuyển file vào thư mục lesson{id}
+            // Giữ nguyên tên file gốc cho đẹp (hoặc thêm time() nếu muốn)
+            $docFile->move($destinationPath, $originalName);
+            
+            // Lưu vào DB
+            Material::create([
+                'lesson_id'   => $newLesson->id,
+                'filename'    => $originalName,
+                // Đường dẫn lưu DB: /materials/lesson{id}/ten_file.pdf
+                'file_path'   => '/' . $folderName . '/' . $originalName, 
+                'file_type'   => $extension,
+                'uploaded_at' => Carbon::now()
+            ]);
         }
-
-
-
-        Lesson::create($data);
-
-
 
         return redirect()->route('instructor.lessons.index', $course->id)
-
             ->with('msg', 'Thêm bài học thành công!');
-
     }
 
 
@@ -247,96 +202,68 @@ class LessonController extends Controller
 
 
 
-    // [PUT] /instructor/courses/{course}/lessons/{lesson}
-
+  // [PUT] /instructor/courses/{course}/lessons/{lesson}
     public function update(Request $request, Course $course, Lesson $lesson)
-
     {
-
-        // 1. Check quyền & ràng buộc
-
+        // 1. Check quyền
         if ($course->instructor_id != Auth::id() || $lesson->course_id != $course->id) {
-
              abort(403);
-
         }
 
-
-
         $request->validate([
-
             'title' => 'required|max:255',
-
-            'video_url' => 'nullable|url',
-
-            'duration' => 'nullable|numeric',
-
-            'document_file' => 'nullable|mimes:pdf,doc,docx,zip,rar|max:10240',
-
+            'document_file' => 'nullable|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,zip,rar|max:10240',
         ]);
-
-
-
-        // Lấy hết dữ liệu trừ file ra để xử lý riêng
 
         $data = $request->except(['video_file', 'document_file']);
 
-
-
-        // 2. Xử lý VIDEO mới (nếu có upload)
-
+        // Xử lý video (Giữ nguyên)
         if ($request->hasFile('video_file')) {
-
-            // (Tùy chọn: Xóa file cũ để dọn rác server)
-
-            // if ($lesson->video_url && file_exists(public_path($lesson->video_url))) {
-
-            //    @unlink(public_path($lesson->video_url));
-
-            // }
-
-
-
-            $file = $request->file('video_file');
-
-            $filename = time() . '_vid_' . $file->getClientOriginalName();
-
-            $file->move(public_path('uploads/lessons'), $filename);
-
-            $data['video_url'] = 'uploads/lessons/' . $filename;
-
+             $file = $request->file('video_file');
+             $filename = time() . '_vid_' . $file->getClientOriginalName();
+             $file->move(public_path('uploads/lessons'), $filename);
+             $data['video_url'] = 'uploads/lessons/' . $filename;
         }
 
-
-
-        // 3. Xử lý TÀI LIỆU mới (nếu có upload)
-
-        if ($request->hasFile('document_file')) {
-
-            $docFile = $request->file('document_file');
-
-            $docName = time() . '_doc_' . $docFile->getClientOriginalName();
-
-            $docFile->move(public_path('uploads/documents'), $docName);
-
-           
-
-            $data['document_url'] = 'uploads/documents/' . $docName;
-
-        }
-
-
-
+        // Cập nhật thông tin cơ bản của Lesson
         $lesson->update($data);
 
+        // Xử lý Tài liệu Mới (SỬA LẠI GIỐNG HÀM STORE)
+        if ($request->hasFile('document_file')) {
+            $docFile = $request->file('document_file');
+            $originalName = $docFile->getClientOriginalName();
+            $extension = $docFile->getClientOriginalExtension();
+            
+            // --- TẠO ĐƯỜNG DẪN THEO ID BÀI HỌC (lesson + id) ---
+            $folderName = 'materials/lesson' . $lesson->id;
+            
+            // Đường dẫn tuyệt đối trên server
+            $destinationPath = public_path($folderName);
 
+            // Kiểm tra nếu folder chưa tồn tại thì tạo mới
+            if (!file_exists($destinationPath)) {
+                mkdir($destinationPath, 0777, true);
+            }
+            
+            // Di chuyển file vào thư mục lesson{id}
+            $docFile->move($destinationPath, $originalName);
+            
+            // Tạo bản ghi mới trong bảng materials
+            // Lưu ý: Code này là THÊM file mới vào danh sách. 
+            // Nếu bạn muốn thay thế file cũ, bạn cần tìm và xóa bản ghi cũ trước.
+            Material::create([
+                'lesson_id'   => $lesson->id,
+                'filename'    => $originalName,
+                // Đường dẫn: /materials/lesson{id}/ten_file.pdf
+                'file_path'   => '/' . $folderName . '/' . $originalName, 
+                'file_type'   => $extension,
+                'uploaded_at' => Carbon::now()
+            ]);
+        }
 
         return redirect()->route('instructor.lessons.index', $course->id)
-
             ->with('msg', 'Cập nhật bài học thành công!');
-
     }
-
 
 
     // [DELETE] /instructor/courses/{course}/lessons/{lesson}

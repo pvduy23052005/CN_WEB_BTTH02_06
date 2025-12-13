@@ -220,6 +220,28 @@ class CourseController extends Controller
 
         return redirect()->route('instructor.courses.index')->with('msg', 'Lỗi: Không tìm thấy khóa học hoặc không đủ quyền.');
     }
-  
+  // [GET] /instructor/courses/{id}/students
+public function students($id)
+{
+    // 1. Lấy thông tin khóa học và Eager Load quan hệ enrollments + student
+    $course = Course::with(['enrollments.student'])
+        ->where('id', $id)
+        ->first();
+
+    // 2. Kiểm tra tồn tại và quyền sở hữu
+    if (!$course || $course->is_deleted == 1) {
+        return redirect()->back()->with('msg', 'Khóa học không tồn tại.');
+    }
+
+    if ($course->instructor_id != Auth::id()) {
+        abort(403, 'Bạn không có quyền xem danh sách học viên của khóa này.');
+    }
+
+    return view('instructor.course.students', [
+        'title' => 'Danh sách học viên',
+        'course' => $course,
+        'enrollments' => $course->enrollments // List ghi danh
+    ]);
+}
 }
 
