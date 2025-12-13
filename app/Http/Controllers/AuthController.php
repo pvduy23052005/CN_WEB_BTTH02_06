@@ -35,7 +35,7 @@ class AuthController extends Controller
 
       if ($user->role == 0) {
         // Học viên: Chuyển hướng đến Dashboard/Home học viên
-        return redirect()->route('student.home')->with('success', 'Đăng nhập thành công!');
+        return redirect()->route('student.courses.index')->with('success', 'Đăng nhập thành công!');
       }
 
       if ($user->role == 1) {

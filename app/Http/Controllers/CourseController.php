@@ -15,7 +15,7 @@ use App\Models\Lesson;
 class CourseController extends Controller
 {
     //Phần sinh viên
-   public function listCourses(Request $request) // <-- Đổi tên cho chức năng Học viên
+   public function listCourses(Request $request) 
 {
     // Lấy giá trị đầu vào từ URL
     $search = $request->get('search');
@@ -71,11 +71,7 @@ class CourseController extends Controller
                                 ->where('course_id', $id)
                                 ->exists();
     }
-    // Ghi chú: Nếu bạn không sử dụng Model Enrollment, bạn cần thay thế
-    // bằng logic kiểm tra bảng pivot hoặc quan hệ bạn đã thiết lập.
-
-    // 3. TRUYỀN DỮ LIỆU SANG VIEW
-    // Biến $lessons được truy cập qua $course->lessons trong View.
+    
     return view('courses.detail', [
         'title' => 'Chi tiết Khóa học: ' . $course->title,
         'course' => $course,

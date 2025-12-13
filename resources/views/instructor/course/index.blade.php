@@ -38,8 +38,7 @@
                             <td>
                                 <div class="course-img-box">
                                     @if($course->image)
-                                        <img src="{{ asset($course->image) }}" alt="Course Image">
-                                    @else
+                                        <img src="{{ asset('uploads/courses/' . $course->image) }}" alt="Course Image">                                    @else
                                         <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:#f0f0f0; color:#ccc; font-size:10px;">
                                             NO IMG
                                         </div>

@@ -2,7 +2,7 @@ const avatarImg = document.getElementById("avatarPreview");
 const avatarUpload = document.getElementById("avatarUpload");
 const accountBtn = document.querySelector(".account");
 
-// Khi click vào khu vực account → mở chọn ảnh
+
 accountBtn.addEventListener("click", () => {
     avatarUpload.click();
 });
