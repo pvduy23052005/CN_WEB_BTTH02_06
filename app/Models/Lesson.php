@@ -19,9 +19,10 @@ class Lesson extends Model
         'course_id',
         'title',
         'content',
-        'video_url', // Cột này có tồn tại trong bảng
-        'order',     // Cột này có tồn tại trong bảng
+        'video_url',
+        'order',   
         'created_at',
+        'is_deleted'
     ];
 
     // Mối quan hệ 1: Lesson thuộc về Course
@@ -30,7 +31,7 @@ class Lesson extends Model
         return $this->belongsTo(Course::class, 'course_id');
     }
     
-    // Mối quan hệ 2: Lesson có nhiều Material (BẮT BUỘC cho logic Controller)
+    // // Mối quan hệ 2: Lesson có nhiều Material (BẮT BUỘC cho logic Controller)
     public function materials()
     {
         return $this->hasMany(Material::class, 'lesson_id');
